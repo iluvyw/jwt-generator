@@ -1,3 +1,5 @@
+use std::io::stdin;
+
 use base64::{prelude::BASE64_URL_SAFE, Engine};
 use hmac::{Hmac, Mac};
 use serde_json::json;
@@ -10,12 +12,17 @@ fn encode<T: AsRef<[u8]>>(input: T) -> String {
 }
 
 fn main() {
+    let mut username = String::new();
+    println!("Please enter your username:");
+    stdin().read_line(&mut username).expect("Did not enter the correct string");
+    let username = username.trim();
+
     let header = json!({
         "type": "JWT",
         "alg": "HS256"
     });
     let payload = json!({
-        "username": "anpham",
+        "username": username,
         "role": "dev"
     });
 
@@ -30,5 +37,5 @@ fn main() {
     let signature: String = encode(result.into_bytes());
     let jwt = format!("{}.{}", token_data, &signature);
     
-    println!("Your token is {}", &jwt);
+    println!("Here is your JWT:\n{}", &jwt);
 }
